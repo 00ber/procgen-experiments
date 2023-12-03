@@ -396,7 +396,7 @@ if __name__ == "__main__":
 
     # TRY NOT TO MODIFY: start the game
     obs = envs.reset()
-    scores = []
+    # scores = []
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
         if global_step < args.learning_starts:
@@ -411,15 +411,21 @@ if __name__ == "__main__":
         scores.append(rewards.reshape(-1, 1))
         scores = scores[-100:]
         # TRY NOT TO MODIFY: record rewards for plotting purposes
-        if "final_info" in infos:
-            for info in infos["final_info"]:
-                # Skip the envs that are not done
-                if "episode" not in info:
-                    continue
-                print(f"global_step={global_step}, episodic_return={info['episode']['r']}")
-                writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
-                writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
+        for item in infos:
+            if "episode" in item.keys():
+                print(f"global_step={global_step}, episodic_return={item['episode']['r']}")
+                writer.add_scalar("charts/episodic_return", item["episode"]["r"], global_step)
+                writer.add_scalar("charts/episodic_length", item["episode"]["l"], global_step)
                 break
+        # if "final_info" in infos:
+        #     for info in infos["final_info"]:
+        #         # Skip the envs that are not done
+        #         if "episode" not in info:
+        #             continue
+        #         print(f"global_step={global_step}, episodic_return={info['episode']['r']}")
+        #         writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
+        #         writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
+        #         break
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
         real_next_obs = next_obs.copy()
@@ -499,22 +505,22 @@ if __name__ == "__main__":
                 writer.add_scalar("losses/actor_loss", actor_loss.item(), global_step)
                 writer.add_scalar("losses/alpha", alpha, global_step)
                 
-                print("SPS:", int(global_step / (time.time() - start_time)))
-                print("losses/qf1_values", qf1_a_values.mean().item(), global_step)
-                print("losses/qf2_values", qf2_a_values.mean().item(), global_step)
-                print("losses/qf1_loss", qf1_loss.item(), global_step)
-                print("losses/qf2_loss", qf2_loss.item(), global_step)
-                print("losses/qf_loss", qf_loss.item() / 2.0, global_step)
-                print("losses/actor_loss", actor_loss.item(), global_step)
-                print("losses/alpha", alpha, global_step)
-                print("charts/SPS", int(global_step / (time.time() - start_time)), global_step)
-                _scores = np.hstack(scores).reshape(-1)
-                _total = np.sum(_scores)
-                _len = _scores.shape[0]
-                _avg_score =  _total/_len
-                print("avg score: ", _avg_score)
-                writer.add_scalar("charts/avg_total_rewards", global_step, _avg_score)
-                print("-" * 50)
+                # print("SPS:", int(global_step / (time.time() - start_time)))
+                # print("losses/qf1_values", qf1_a_values.mean().item(), global_step)
+                # print("losses/qf2_values", qf2_a_values.mean().item(), global_step)
+                # print("losses/qf1_loss", qf1_loss.item(), global_step)
+                # print("losses/qf2_loss", qf2_loss.item(), global_step)
+                # print("losses/qf_loss", qf_loss.item() / 2.0, global_step)
+                # print("losses/actor_loss", actor_loss.item(), global_step)
+                # print("losses/alpha", alpha, global_step)
+                # print("charts/SPS", int(global_step / (time.time() - start_time)), global_step)
+                # _scores = np.hstack(scores).reshape(-1)
+                # _total = np.sum(_scores)
+                # _len = _scores.shape[0]
+                # _avg_score =  _total/_len
+                # print("avg score: ", _avg_score)
+                # writer.add_scalar("charts/avg_total_rewards", global_step, _avg_score)
+                # print("-" * 50)
                 if args.autotune:
                     writer.add_scalar("losses/alpha_loss", alpha_loss.item(), global_step)
 
