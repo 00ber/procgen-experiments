@@ -255,7 +255,7 @@ class SoftQNetwork(nn.Module):
         # )
         self.conv = conv
         with torch.inference_mode():
-            output_dim = permute_and_forward(self.conv, torch.zeros(1, *obs_shape).to(self.conv.device)).shape[1]
+            output_dim = permute_and_forward(self.conv, torch.zeros(1, *obs_shape).to(next(self.conv.parameters()).device)).shape[1]
         # with torch.inference_mode():
         #     output_dim = self.conv(torch.zeros(1, *obs_shape)).shape[1]
 
@@ -286,7 +286,7 @@ class Actor(nn.Module):
         # )
 
         with torch.inference_mode():
-            output_dim = permute_and_forward(self.conv, torch.zeros(1, *obs_shape).to(self.conv.device)).shape[1]
+            output_dim = permute_and_forward(self.conv, torch.zeros(1, *obs_shape).to(next(self.conv.parameters()).device)).shape[1]
             # _x = torch.zeros(1, *obs_shape)
             # output_dim = self.conv(_x.permute((0, 3, 1, 2)) / 255.0).shape[1]
 
