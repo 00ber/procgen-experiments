@@ -446,7 +446,7 @@ if __name__ == "__main__":
                     )
                     # adapt Q-target for discrete Q-function
                     min_qf_next_target = min_qf_next_target.sum(dim=1)
-                    next_q_value = data.rewards.flatten() + (1 - data.dones.flatten()) * args.gamma * (min_qf_next_target)
+                    next_q_value = data.rewards.flatten().to(device) + (1 - data.dones.flatten().to(device)) * args.gamma * (min_qf_next_target.to(device))
 
                 # use Q-values only for the taken actions
                 qf1_values = qf1(data.observations)
