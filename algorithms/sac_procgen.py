@@ -309,6 +309,7 @@ class Actor(nn.Module):
     #     return action, log_prob, action_probs
     
     def get_action(self, x):
+        x = x.to(next(self.conv.parameters()).device)
         # x = torch.FloatTensor(x)
         hidden = self.conv(x.permute((0, 3, 1, 2)) / 255.0) 
         logits = self(hidden)
