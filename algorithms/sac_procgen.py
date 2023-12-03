@@ -265,6 +265,7 @@ class SoftQNetwork(nn.Module):
     def forward(self, x):
         # x = F.relu(self.conv(x / 255.0))
         # x = torch.FloatTensor(x)
+        x = x.to(next(self.conv.parameters()).device)
         hidden = self.conv(x.permute((0, 3, 1, 2)) / 255.0) 
         x = F.relu(self.fc1(hidden))
         q_vals = self.fc_q(x)
