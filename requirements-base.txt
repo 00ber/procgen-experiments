@@ -1,0 +1,17 @@
+cffi==1.16.0
+cloudpickle==3.0.0
+filelock==3.13.1
+glcontext==2.5.0
+glfw==1.12.0
+gym==0.26.2
+gym-notices==0.0.8
+gym3==0.3.3
+imageio==2.32.0
+imageio-ffmpeg==0.3.0
+importlib-metadata==6.8.0
+moderngl==5.8.2
+numpy==1.26.1
+Pillow==10.0.1
+procgen==0.10.7
+pycparser==2.21
+zipp==3.17.0

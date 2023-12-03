@@ -1,0 +1,6 @@
+videos/*
+wandb/*
+runs/*
+models/*
+cleanrl/*
+__pycache__
