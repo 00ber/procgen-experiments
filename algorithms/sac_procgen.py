@@ -505,11 +505,10 @@ if __name__ == "__main__":
                 print("losses/actor_loss", actor_loss.item(), global_step)
                 print("losses/alpha", alpha, global_step)
                 print("charts/SPS", int(global_step / (time.time() - start_time)), global_step)
-                _scores = np.hstack(scores)
-                _total = np.sum(_scores, axis=0)
+                _scores = np.hstack(scores).reshape(-1)
+                _total = np.sum(_scores)
                 _len = _scores.shape[0]
-                print(_total.shape)
-                print(_scores.shape)
+               
                 print("avg score: ", _total/_len)
                 print("-" * 50)
                 if args.autotune:
