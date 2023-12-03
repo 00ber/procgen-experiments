@@ -409,7 +409,7 @@ if __name__ == "__main__":
         # next_obs, rewards, terminations, truncations, infos = envs.step(actions)
         next_obs, rewards, terminations, infos = envs.step(actions)
         # scores.append(rewards.reshape(-1, 1))
-        scores = scores[-100:]
+        # scores = scores[-100:]
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         for item in infos:
             if "episode" in item.keys():
