@@ -498,6 +498,7 @@ if __name__ == "__main__":
                 writer.add_scalar("losses/qf_loss", qf_loss.item() / 2.0, global_step)
                 writer.add_scalar("losses/actor_loss", actor_loss.item(), global_step)
                 writer.add_scalar("losses/alpha", alpha, global_step)
+                
                 print("SPS:", int(global_step / (time.time() - start_time)))
                 print("losses/qf1_values", qf1_a_values.mean().item(), global_step)
                 print("losses/qf2_values", qf2_a_values.mean().item(), global_step)
@@ -510,8 +511,9 @@ if __name__ == "__main__":
                 _scores = np.hstack(scores).reshape(-1)
                 _total = np.sum(_scores)
                 _len = _scores.shape[0]
-               
-                print("avg score: ", _total/_len)
+                _avg_score =  _total/_len
+                print("avg score: ", _avg_score)
+                writer.add_scalar("charts/avg_total_rewards", global_step, _avg_score)
                 print("-" * 50)
                 if args.autotune:
                     writer.add_scalar("losses/alpha_loss", alpha_loss.item(), global_step)
