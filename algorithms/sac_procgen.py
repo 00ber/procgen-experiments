@@ -264,7 +264,7 @@ class SoftQNetwork(nn.Module):
 
     def forward(self, x):
         # x = F.relu(self.conv(x / 255.0))
-        x = torch.FloatTensor(x)
+        # x = torch.FloatTensor(x)
         hidden = self.conv(x.permute((0, 3, 1, 2)) / 255.0) 
         x = F.relu(self.fc1(hidden))
         q_vals = self.fc_q(x)
@@ -309,7 +309,7 @@ class Actor(nn.Module):
     #     return action, log_prob, action_probs
     
     def get_action(self, x):
-        x = torch.FloatTensor(x)
+        # x = torch.FloatTensor(x)
         hidden = self.conv(x.permute((0, 3, 1, 2)) / 255.0) 
         logits = self(hidden)
         action_probs = torch.softmax(logits, dim=1)
