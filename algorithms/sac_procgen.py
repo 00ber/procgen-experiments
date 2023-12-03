@@ -449,10 +449,10 @@ if __name__ == "__main__":
                     next_q_value = data.rewards.flatten().to(device) + (1 - data.dones.flatten().to(device)) * args.gamma * (min_qf_next_target.to(device))
 
                 # use Q-values only for the taken actions
-                qf1_values = qf1(data.observations)
-                qf2_values = qf2(data.observations)
-                qf1_a_values = qf1_values.gather(1, data.actions.long().view(-1, 1)).view(-1)
-                qf2_a_values = qf2_values.gather(1, data.actions.long().view(-1, 1)).view(-1)
+                qf1_values = qf1(data.observations).to(device)
+                qf2_values = qf2(data.observations).to(device)
+                qf1_a_values = qf1_values.gather(1, data.actions.long().view(-1, 1).to(device)).view(-1)
+                qf2_a_values = qf2_values.gather(1, data.actions.long().view(-1, 1).to(device)).view(-1)
                 qf1_loss = F.mse_loss(qf1_a_values, next_q_value)
                 qf2_loss = F.mse_loss(qf2_a_values, next_q_value)
                 qf_loss = qf1_loss + qf2_loss
