@@ -408,7 +408,7 @@ if __name__ == "__main__":
         # TRY NOT TO MODIFY: execute the game and log data.
         # next_obs, rewards, terminations, truncations, infos = envs.step(actions)
         next_obs, rewards, terminations, infos = envs.step(actions)
-        scores.append(rewards.reshape(-1, 1))
+        # scores.append(rewards.reshape(-1, 1))
         scores = scores[-100:]
         # TRY NOT TO MODIFY: record rewards for plotting purposes
         for item in infos:
