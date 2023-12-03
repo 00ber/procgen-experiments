@@ -1,0 +1,14 @@
+#!/bin/zsh
+
+#SBATCH --job-name=jupyter
+#SBATCH --qos=cml-high
+#SBATCH --account=cml-tokekar
+#SBATCH --partition=cml-dpart
+#SBATCH --gres=gpu:rtx2080ti:4
+#SBATCH --time=1-00:00:00
+#SBATCH --mem=64GB
+#SBATCH --output=./logs/train-ppo.log
+
+source ~/.zshrc
+conda activate procgen
+python algorithms/ppo_procgen.py --env-id starpilot --track --capture-video --total-timesteps 5000000
