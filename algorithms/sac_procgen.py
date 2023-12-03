@@ -255,7 +255,7 @@ class SoftQNetwork(nn.Module):
         # )
         self.conv = conv
         with torch.inference_mode():
-            output_dim = permute_and_forward(self.conv, torch.zeros(1, *obs_shape)).shape[1]
+            output_dim = permute_and_forward(self.conv, torch.zeros(1, *obs_shape).to(self.conv.device)).shape[1]
         # with torch.inference_mode():
         #     output_dim = self.conv(torch.zeros(1, *obs_shape)).shape[1]
 
@@ -286,7 +286,7 @@ class Actor(nn.Module):
         # )
 
         with torch.inference_mode():
-            output_dim = permute_and_forward(self.conv, torch.zeros(1, *obs_shape)).shape[1]
+            output_dim = permute_and_forward(self.conv, torch.zeros(1, *obs_shape).to(self.conv.device)).shape[1]
             # _x = torch.zeros(1, *obs_shape)
             # output_dim = self.conv(_x.permute((0, 3, 1, 2)) / 255.0).shape[1]
 
@@ -361,7 +361,7 @@ if __name__ == "__main__":
     envs = make_env(args.env_id, args.num_envs, args.gamma, args.capture_video, run_name)()
     assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
 
-    conv = get_conv(envs)
+    conv = get_conv(envs).to(device)
     actor = Actor(envs, conv).to(device)
     qf1 = SoftQNetwork(envs, conv).to(device)
     qf2 = SoftQNetwork(envs, conv).to(device)
