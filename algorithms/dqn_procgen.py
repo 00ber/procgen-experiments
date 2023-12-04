@@ -190,14 +190,20 @@ if __name__ == "__main__":
         # ALGO LOGIC: put action logic here
         epsilon = linear_schedule(args.start_e, args.end_e, args.exploration_fraction * args.total_timesteps, global_step)
         if random.random() < epsilon:
-            actions = np.array(envs.single_action_space.sample())
+            # actions = np.array(envs.single_action_space.sample())
+            actions = envs.single_action_space.sample()
             # print("########## 1")
             # print(actions)
         else:
             q_values = q_network(torch.Tensor(obs).unsqueeze(0).to(device))
             actions = torch.argmax(q_values, dim=1).item()
-            # print("########## 2")
-            actions = np.array(actions)
+            # # print("########## 2")
+            # print("############ before #####")
+            # print(type(actions))
+            # actions = np.array(actions)
+            # print("######## after #######")
+            # print(type(actions))
+            # raise Exception("Hoge")
             # print(actions)
 
         # TRY NOT TO MODIFY: execute the game and log data.
@@ -242,7 +248,7 @@ if __name__ == "__main__":
         # for idx, trunc in enumerate(truncations):
         #     if trunc:
         #         real_next_obs[idx] = infos["final_observation"][idx]
-        rb.add(obs.cpu(), real_next_obs.cpu(), actions.cpu(), rewards.cpu(), terminations.cpu(), infos)
+        rb.add(obs, real_next_obs, actions, rewards, terminations, infos)
 
         # TRY NOT TO MODIFY: CRUCIAL step easy to overlook
         obs = next_obs
