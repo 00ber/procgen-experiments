@@ -184,7 +184,8 @@ if __name__ == "__main__":
 
     # TRY NOT TO MODIFY: start the game
     # obs, _ = envs.reset(seed=args.seed)
-    obs = torch.Tensor(envs.reset()).to(device)
+    # obs = torch.Tensor(envs.reset()).to(device)
+    obs = envs.reset()
     # next_done = torch.zeros(args.num_envs).to(device)
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
