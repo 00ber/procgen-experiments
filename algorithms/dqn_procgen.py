@@ -242,7 +242,7 @@ if __name__ == "__main__":
         # for idx, trunc in enumerate(truncations):
         #     if trunc:
         #         real_next_obs[idx] = infos["final_observation"][idx]
-        rb.add(obs, real_next_obs, actions, rewards, terminations, infos)
+        rb.add(obs.cpu(), real_next_obs.cpu(), actions.cpu(), rewards.cpu(), terminations.cpu(), infos)
 
         # TRY NOT TO MODIFY: CRUCIAL step easy to overlook
         obs = next_obs
