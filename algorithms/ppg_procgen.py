@@ -482,6 +482,8 @@ if __name__ == "__main__":
         writer.add_scalar("losses/aux/kl_loss", kl_loss.mean().item(), global_step)
         writer.add_scalar("losses/aux/aux_value_loss", aux_value_loss.item(), global_step)
         writer.add_scalar("losses/aux/real_value_loss", real_value_loss.item(), global_step)
-
+        model_path = f"./models/ppo-agent.pt"
+        torch.save(agent.state_dict(), model_path)
+        print(f"model saved to {model_path}")
     envs.close()
     writer.close()
