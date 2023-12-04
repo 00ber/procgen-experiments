@@ -1,60 +1,37 @@
-import random
-import gym
-import gym3
-import numpy as np
+import procgen
+import time
+from gym3 import ViewerWrapper, types_np
+from algorithms.ppo_procgen import Agent
 import torch
-from procgen import ProcgenEnv
-from cleanrl.cleanrl.ppg_procgen import Agent
 
- # TRY NOT TO MODIFY: seeding
-seed = 16
-random.seed(seed)
-np.random.seed(seed)
-torch.manual_seed(seed)
+def main():
+    env = procgen.ProcgenGym3Env(num=1, env_name="starpilot", render_mode="rgb_array")
+    env = ViewerWrapper(env=env, info_key="rgb")
+    print(env.ob_space)
+    env.single_observation_space = env.ob_space["rgb"]
+    env.single_action_space = env.ac_space
+    print(env.single_action_space)
+    print(dir(env.single_action_space))
+    env.single_action_space.n = 15
+    agent = Agent(env).to("cpu")
+    agent.load_state_dict(torch.load("./models/ppo-agent.pt", map_location=torch.device('cpu')))
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-
-
-# env setup
-envs = ProcgenEnv(num_envs=1, env_name="starpilot", num_levels=0, start_level=0, distribution_mode="easy", render_mode="rgb_array")
-envs = gym3.ViewerWrapper(envs)
-envs = gym.wrappers.TransformObservation(envs, lambda obs: obs["rgb"])
-envs.single_action_space = envs.action_space
-envs.single_observation_space = envs.observation_space["rgb"]
-envs.is_vector_env = True
-envs = gym.wrappers.RecordEpisodeStatistics(envs)
-# envs = gym.wrappers.RecordVideo(envs, f"videos/latest-video")
-envs = gym.wrappers.NormalizeReward(envs, gamma=0.99)
-envs = gym.wrappers.TransformReward(envs, lambda reward: np.clip(reward, -10, 10))
-
-assert isinstance(envs.single_action_space, gym.spaces.Discrete), "only discrete action space is supported"
-
-agent = Agent(envs).to(device)
-# agent.load_state_dict(torch.load("/Users/karkisushant/workspace/procgen/models/agent.pt"), strict=False)
-agent.load_state_dict(torch.load("/Users/karkisushant/workspace/procgen/models/agent.pt"))
-
-# import pickle
-
-# open a file, where you stored the pickled data
-# _model = open('cleanrl/wandb/latest-run/run-2eg5ekfk.wandb', 'rb')
-
-# dump information to that file
-# data = pickle.load(_model)
-# print(data.keys())
-next_obs = envs.reset()
-next_obs = torch.Tensor(next_obs).to(device)
-step = 0
-while True:
-    with torch.no_grad():
-        action, _, _, _ = agent.get_action_and_value(next_obs)
-    envs.render()
-    # TRY NOT TO MODIFY: execute the game and log data.
-    next_obs, reward, done, info = envs.step(action.cpu().numpy())
-    next_obs, next_done = torch.Tensor(next_obs).to(device), torch.Tensor(done).to(device)
-    # print(f"step {step} reward {rew} first {first}")
-    if step == 50000:
-        break
-    step += 1
+    # next_obs = torch.Tensor(env.reset())
+    # next_obs = env.callmethod("get_state")
+    # next_obs = torch.Tensor(next_obs)
+    next_obs = None
     
+    
+    start = time.time()
+    for i in range(10000):
+        if i == 0:
+            action = torch.Tensor([0])
+        else:
+            action, _, _, _ = agent.get_action_and_value(next_obs)
+        env.act(action.cpu().numpy())
+        next_obs = torch.FloatTensor(env.observe()[1]["rgb"])
+        print("step", i, i / (time.time() - start))
 
+
+if __name__ == "__main__":
+    main()
