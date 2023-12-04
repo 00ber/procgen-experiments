@@ -244,10 +244,11 @@ if __name__ == "__main__":
         #         break
 
         # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
-        real_next_obs = next_obs.copy()
+        real_next_obs = torch.Tensor(next_obs.copy())
         # for idx, trunc in enumerate(truncations):
         #     if trunc:
         #         real_next_obs[idx] = infos["final_observation"][idx]
+        # print(type(obs))
         rb.add(obs, real_next_obs, actions, rewards, terminations, infos)
 
         # TRY NOT TO MODIFY: CRUCIAL step easy to overlook
