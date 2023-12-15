@@ -28,3 +28,10 @@ python algorithms/ppo_procgen.py --env-id starpilot --track --capture-video --to
 ```
 python algorithms/ppg_procgen.py --env-id starpilot --num-envs 64 --track --total-timesteps 5000000
 ```
+
+## Rendering an agent in action
+
+- DQN
+  
+```
+```

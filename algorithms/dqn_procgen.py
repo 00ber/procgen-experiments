@@ -75,10 +75,6 @@ def parse_args():
 
     return args
 
-def hoge(obs):
-    print(dir(obs))
-    return obs
-
 def make_env(env_id, num_envs, capture_video, run_name, gamma):
     envs = gym.make("procgen-starpilot-v0", num_levels=0, start_level=0, distribution_mode="easy", render_mode="rgb_array")
     envs.single_action_space = envs.action_space

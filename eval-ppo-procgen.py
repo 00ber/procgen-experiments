@@ -3,8 +3,22 @@ import time
 from gym3 import ViewerWrapper, types_np
 from algorithms.ppo_procgen import Agent
 import torch
+import argparse
 
-def main():
+def parse_args():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--model-path", type=str, default=None,
+        help="the path to the model checkpoint")
+    parser.add_argument("--num-timesteps", type=int, default=10000,
+        help="number of timesteps to run simulation for")
+    args = parser.parse_args()
+
+    return args
+
+def main(args):
+    if not args.model_path:
+        raise Exception("Must provide path to valid checkpoint")
+    
     env = procgen.ProcgenGym3Env(num=1, env_name="starpilot", render_mode="rgb_array")
     env = ViewerWrapper(env=env, info_key="rgb")
     print(env.ob_space)
@@ -16,14 +30,11 @@ def main():
     agent = Agent(env).to("cpu")
     agent.load_state_dict(torch.load("./models/ppo-agent.pt", map_location=torch.device('cpu')))
 
-    # next_obs = torch.Tensor(env.reset())
-    # next_obs = env.callmethod("get_state")
-    # next_obs = torch.Tensor(next_obs)
     next_obs = None
     
     
     start = time.time()
-    for i in range(10000):
+    for i in range(args.num_timesteps):
         if i == 0:
             action = torch.Tensor([0])
         else:
@@ -34,4 +45,5 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    main(args)
