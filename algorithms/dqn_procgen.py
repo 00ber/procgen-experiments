@@ -1,8 +1,8 @@
-# docs and experiment results can be found at https://docs.cleanrl.dev/rl-algorithms/dqn/#dqn_ataripy
 import argparse
 import os
 import random
 import time
+import gym
 from distutils.util import strtobool
 
 import gymnasium as gym
@@ -72,8 +72,6 @@ def parse_args():
     parser.add_argument("--train-frequency", type=int, default=4,
         help="the frequency of training")
     args = parser.parse_args()
-    # fmt: on
-    # assert args.num_envs == 1, "vectorized envs are not supported at the moment"
 
     return args
 
@@ -82,11 +80,7 @@ def hoge(obs):
     return obs
 
 def make_env(env_id, num_envs, capture_video, run_name, gamma):
-    import gym
     envs = gym.make("procgen-starpilot-v0", num_levels=0, start_level=0, distribution_mode="easy", render_mode="rgb_array")
-    # envs = ProcgenEnv(num_envs=num_envs, env_name=env_id, num_levels=0, start_level=0, distribution_mode="easy", render_mode="rgb_array")
-    # envs = gym.wrappers.TransformObservation(envs, lambda obs: obs["rgb"])
-    # envs = gym.wrappers.TransformObservation(envs, hoge)
     envs.single_action_space = envs.action_space
     envs.single_observation_space = envs.observation_space
     envs.is_vector_env = False
@@ -117,7 +111,6 @@ class QNetwork(nn.Module):
 
     def forward(self, x):
         return self.network(x.permute((0, 3, 1, 2)) / 255.0)
-        # return self.network(x / 255.0)
 
 
 def linear_schedule(start_e: float, end_e: float, duration: int, t: int):
@@ -126,15 +119,6 @@ def linear_schedule(start_e: float, end_e: float, duration: int, t: int):
 
 
 if __name__ == "__main__":
-#     import stable_baselines3 as sb3
-
-#     if sb3.__version__ < "2.0":
-#         raise ValueError(
-#             """Ongoing migration: run the following command to install the new dependencies:
-
-# poetry run pip install "stable_baselines3==2.0.0a1" "gymnasium[atari,accept-rom-license]==0.28.1"  "ale-py==0.8.1" 
-# """
-#         )
     args = parse_args()
     run_name = f"{args.env_id}__{args.exp_name}__{args.seed}__{int(time.time())}"
     if args.track:
@@ -148,7 +132,6 @@ if __name__ == "__main__":
             name=run_name,
             monitor_gym=True,
             save_code=True,
-            # mode="disabled"
         )
     writer = SummaryWriter(f"runs/{run_name}")
     writer.add_text(
@@ -156,7 +139,6 @@ if __name__ == "__main__":
         "|param|value|\n|-|-|\n%s" % ("\n".join([f"|{key}|{value}|" for key, value in vars(args).items()])),
     )
 
-    # TRY NOT TO MODIFY: seeding
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
@@ -182,80 +164,32 @@ if __name__ == "__main__":
     )
     start_time = time.time()
 
-    # TRY NOT TO MODIFY: start the game
-    # obs, _ = envs.reset(seed=args.seed)
-    # obs = torch.Tensor(envs.reset()).to(device)
+    # Start the game
     obs = envs.reset()
-    # next_done = torch.zeros(args.num_envs).to(device)
     for global_step in range(args.total_timesteps):
         # ALGO LOGIC: put action logic here
         epsilon = linear_schedule(args.start_e, args.end_e, args.exploration_fraction * args.total_timesteps, global_step)
         if random.random() < epsilon:
-            # actions = np.array(envs.single_action_space.sample())
             actions = envs.single_action_space.sample()
-            # print("########## 1")
-            # print(actions)
         else:
             q_values = q_network(torch.Tensor(obs).unsqueeze(0).to(device))
             actions = torch.argmax(q_values, dim=1).item()
-            # # print("########## 2")
-            # print("############ before #####")
-            # print(type(actions))
-            # actions = np.array(actions)
-            # print("######## after #######")
-            # print(type(actions))
-            # raise Exception("Hoge")
-            # print(actions)
 
-        # TRY NOT TO MODIFY: execute the game and log data.
-        # print("##################")
-        # print(actions.shape)
-        # actions = actions.reshape(-1)
-        # print(actions.shape)
-        # next_obs, rewards, terminations, truncations, infos = envs.step(actions)
-        # print("#################", actions.shape)
         next_obs, rewards, terminations, infos = envs.step(actions)
-        # observations, rewards, dones, infos
 
-        # TRY NOT TO MODIFY: record rewards for plotting purposes
+        # Record rewards for plotting purposes
         if terminations:
             if "episode" in infos.keys():
                 print(f"global_step={global_step}, episodic_return={infos['episode']['r']}")
                 writer.add_scalar("charts/episodic_return", infos["episode"]["r"], global_step)
                 writer.add_scalar("charts/episodic_length", infos["episode"]["l"], global_step)
-                # break
-
-        # for item in infos:
-        #     print(infos)
-        #     if "episode" in item.keys():
-        #         print(f"global_step={global_step}, episodic_return={item['episode']['r']}")
-        #         writer.add_scalar("charts/episodic_return", item["episode"]["r"], global_step)
-        #         writer.add_scalar("charts/episodic_length", item["episode"]["l"], global_step)
-        #         break
-
-        # if "final_info" in infos:
-        #     for info in infos["final_info"]:
-        #         # Skip the envs that are not done
-        #         if "episode" not in info:
-        #             continue
-        #         print(f"global_step={global_step}, episodic_return={info['episode']['r']}")
-        #         writer.add_scalar("charts/episodic_return", info["episode"]["r"], global_step)
-        #         writer.add_scalar("charts/episodic_length", info["episode"]["l"], global_step)
-        #         writer.add_scalar("charts/epsilon", epsilon, global_step)
-        #         break
-
-        # TRY NOT TO MODIFY: save data to reply buffer; handle `final_observation`
+        
+        # Save data to replay buffer
         real_next_obs = torch.Tensor(next_obs.copy())
-        # for idx, trunc in enumerate(truncations):
-        #     if trunc:
-        #         real_next_obs[idx] = infos["final_observation"][idx]
-        # print(type(obs))
         rb.add(obs, real_next_obs, actions, rewards, terminations, infos)
 
-        # TRY NOT TO MODIFY: CRUCIAL step easy to overlook
         obs = next_obs
 
-        # ALGO LOGIC: training.
         if global_step > args.learning_starts:
             if global_step % args.train_frequency == 0:
                 data = rb.sample(args.batch_size)

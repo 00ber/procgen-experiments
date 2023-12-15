@@ -1,4 +1,3 @@
-# docs and experiment results can be found at https://docs.cleanrl.dev/rl-algorithms/ppg/#ppg_procgenpy
 import argparse
 import os
 import random
@@ -17,7 +16,6 @@ from torch.utils.tensorboard import SummaryWriter
 
 
 def parse_args():
-    # fmt: off
     parser = argparse.ArgumentParser()
     parser.add_argument("--exp-name", type=str, default=os.path.basename(__file__).rstrip(".py"),
         help="the name of this experiment")
@@ -92,7 +90,6 @@ def parse_args():
     args.minibatch_size = int(args.batch_size // args.num_minibatches)
     args.aux_batch_rollouts = int(args.num_envs * args.n_iteration)
     assert args.v_value == 1, "Multiple value epoch (v_value != 1) is not supported yet"
-    # fmt: on
     return args
 
 
@@ -230,9 +227,8 @@ if __name__ == "__main__":
         "|param|value|\n|-|-|\n%s" % ("\n".join([f"|{key}|{value}|" for key, value in vars(args).items()])),
     )
 
-    flatten_unflatten_test()  # Try not to mess with the flatten unflatten logic
+    flatten_unflatten_test()  
 
-    # TRY NOT TO MODIFY: seeding
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
