@@ -30,8 +30,21 @@ python algorithms/ppg_procgen.py --env-id starpilot --num-envs 64 --track --tota
 ```
 
 ## Rendering an agent in action
+Checkpoints of our agents trained for 5M timesteps using DQN, PPO and PPG can be found in the models directory. They can be seen in action via the following commands:
 
 - DQN
-  
 ```
+python eval-dqn-procgen.py --model-path models/dqn-agent.pt --num-timesteps 1000
 ```
+- PPO
+```
+python eval-ppo-procgen.py --model-path models/ppo-agent.pt --num-timesteps 1000
+```
+- PPG
+```
+python eval-ppg-procgen.py --model-path models/ppg-agent.pt --num-timesteps 1000
+```
+
+**Arguments:**
+- `--model-path` is the path to the model checkpoint file
+- `--num-timesteps` is to control how long you want to run the simulation for
